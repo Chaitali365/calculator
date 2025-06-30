@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Calculator with Backspace and Aligned Buttons</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(to right, #f3e5f5, #ede7f6);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .calculator {
+      background-color: #ffffff;
+      padding: 35px;
+      border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(128, 0, 128, 0.15);
+      width: 440px;
+      max-width: 95%;
+    }
+
+    .display {
+      width: 100%;
+      height: 90px;
+      background: #f3e8fc;
+      color: #6a1b9a;
+      font-size: 2.8rem;
+      text-align: right;
+      padding: 25px;
+      border-radius: 14px;
+      margin-bottom: 30px;
+      border: 3px solid #d1b3ff;
+      box-shadow: inset 0 0 8px #e0cffe;
+      overflow-x: auto;
+      user-select: none;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+    }
+
+    /* Make all buttons fill their grid cell fully */
+    .buttons button {
+      width: 100%;
+      height: 60px;
+      font-size: 1.3rem;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: 0.2s ease-in-out;
+      color: #4a0072;
+      background-color: #e1bee7;
+      box-shadow: 0 4px 8px rgba(106, 27, 154, 0.1);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      user-select: none;
+    }
+
+    /* Span two columns for Clear, Equal, and Zero buttons */
+    .clear {
+      grid-column: span 2;
+    }
+
+    .equal {
+      grid-column: span 2;
+      color: white;
+      background-color: #b266ff;
+    }
+
+    .equal:hover {
+      background-color: #9f44ff;
+    }
+
+    .zero {
+      grid-column: span 2;
+    }
+
+    /* Hover effect for buttons */
+    .buttons button:hover {
+      background-color: #d7b2e3;
+      transform: scale(1.07);
+      box-shadow: 0 0 12px rgba(140, 70, 180, 0.3);
+    }
+
+    /* Specific button colors */
+    .num {
+      background-color: #f0e6fc;
+    }
+
+    .num:hover {
+      background-color: #e4d4fb;
+    }
+
+    .operator {
+      background-color: #d1a3e8;
+    }
+
+    .operator:hover {
+      background-color: #c084dc;
+    }
+
+    .clear {
+      background-color: #f8bbd0;
+    }
+
+    .clear:hover {
+      background-color: #f48fb1;
+    }
+
+    .special {
+      background-color: #e0e0e0;
+    }
+
+    .special:hover {
+      background-color: #d2d2d2;
+    }
+
+    .backspace {
+      background-color: #ffe082;
+    }
+
+    .backspace:hover {
+      background-color: #ffca28;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="calculator" role="region" aria-label="Calculator">
+    <div class="display" id="display" role="textbox" aria-live="polite" aria-atomic="true">0</div>
+    <div class="buttons">
+      <button onclick="clearDisplay()" class="clear" aria-label="Clear">C</button>
+      <button onclick="backspace()" class="backspace" aria-label="Backspace">⌫</button>
+      <button onclick="append('%')" class="special" aria-label="Percentage">%</button>
+      <button onclick="append('/')" class="operator" aria-label="Divide">÷</button>
+
+      <button onclick="append('7')" class="num" aria-label="Seven">7</button>
+      <button onclick="append('8')" class="num" aria-label="Eight">8</button>
+      <button onclick="append('9')" class="num" aria-label="Nine">9</button>
+      <button onclick="append('*')" class="operator" aria-label="Multiply">×</button>
+
+      <button onclick="append('4')" class="num" aria-label="Four">4</button>
+      <button onclick="append('5')" class="num" aria-label="Five">5</button>
+      <button onclick="append('6')" class="num" aria-label="Six">6</button>
+      <button onclick="append('-')" class="operator" aria-label="Minus">−</button>
+
+      <button onclick="append('1')" class="num" aria-label="One">1</button>
+      <button onclick="append('2')" class="num" aria-label="Two">2</button>
+      <button onclick="append('3')" class="num" aria-label="Three">3</button>
+      <button onclick="append('+')" class="operator" aria-label="Plus">+</button>
+
+      <button onclick="append('0')" class="num zero" aria-label="Zero">0</button>
+      <button onclick="append('.')" class="special" aria-label="Decimal point">.</button>
+      <button onclick="calculate()" class="equal" aria-label="Equals">=</button>
+    </div>
+  </div>
+
+  <script>
+    const display = document.getElementById('display');
+
+    function append(value) {
+      if (display.innerText === '0' || display.innerText === 'Error') {
+        display.innerText = value;
+      } else {
+        display.innerText += value;
+      }
+    }
+
+    function clearDisplay() {
+      display.innerText = '0';
+    }
+
+    function backspace() {
+      if (display.innerText.length > 1) {
+        display.innerText = display.innerText.slice(0, -1);
+      } else {
+        display.innerText = '0';
+      }
+    }
+
+    function calculate() {
+      try {
+        // Replace ÷ and × symbols with JS operators before eval
+        let expression = display.innerText.replace(/÷/g, '/').replace(/×/g, '*');
+        let result = eval(expression);
+        display.innerText = result;
+      } catch (e) {
+        display.innerText = 'Error';
+      }
+    }
+  </script>
+
+</body>
+</html>
